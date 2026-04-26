@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:cafe_management_app/models/menu_item.dart';
 import 'package:cafe_management_app/models/order_type.dart';
 import 'package:cafe_management_app/screens/admin/admin_login_screen.dart';
+import 'package:cafe_management_app/screens/order_confirmation_dialog.dart';
+import 'package:cafe_management_app/screens/orders_history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -85,13 +87,57 @@ class _HomeScreenState extends State<HomeScreen> {
       await _loadState();
     }
   }
+  Future<void> _showOrderConfirmationDialog() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return OrderConfirmationDialog(
+          cart: _cart,
+          subtotal: _subtotal,
+          tax: _tax,
+          total: _total,
+          orderType: _selectedOrderType == OrderType.eatIn ? 'eat_in' : 'take_out',
+          menuItems: _menuItems,
+        );
+      },
+    );
 
+    if (confirmed == true) {
+      // Order was successfully placed
+      setState(() {
+        _cart.clear();
+        _selectedOrderType = null;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Order placed successfully!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
+  void _goToOrdersHistory() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => OrdersHistoryScreen(menuItems: _menuItems),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cafe Ordering'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: 'Order History',
+            onPressed: _goToOrdersHistory,
+          ),
           IconButton(
             icon: const Icon(Icons.admin_panel_settings),
             tooltip: 'Admin Login',
@@ -215,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildSummaryRow('Total', _total, isTotal: true),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: _cart.isNotEmpty ? () {} : null,
+                onPressed: _cart.isNotEmpty ? _showOrderConfirmationDialog : null,
                 child: Text(_cart.isNotEmpty ? 'Confirm Order' : 'Add items to cart'),
               ),
             ],
