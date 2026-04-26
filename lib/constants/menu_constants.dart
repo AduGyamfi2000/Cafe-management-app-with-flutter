@@ -1,8 +1,5 @@
 import 'package:cafe_management_app/models/menu_item.dart';
 
-const String adminUsername = 'admin';
-const String adminPassword = 'cafepass';
-
 final List<MenuItem> defaultMenuItems = [
   const MenuItem(id: 1, name: 'Espresso', price: 3.50),
   const MenuItem(id: 2, name: 'Cappuccino', price: 4.25),

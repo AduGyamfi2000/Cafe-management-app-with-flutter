@@ -1,5 +1,9 @@
 class MenuItem {
-  const MenuItem({required this.id, required this.name, required this.price});
+  const MenuItem({
+    required this.id,
+    required this.name,
+    required this.price,
+  });
 
   final int id;
   final String name;

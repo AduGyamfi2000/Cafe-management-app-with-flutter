@@ -1,4 +1,1 @@
-enum OrderType {
-  eatIn,
-  takeOut,
-}
+enum OrderType { eatIn, takeOut }
